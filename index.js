@@ -11,12 +11,12 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 var options = {
-  index: "nodefile.htm"
+    index: "nodefile.htm"
 };
 
-app.use('/',express.static('public',options));
+app.use('/', express.static('public', options));
 
-app.use('/getLedStatus',function(req,res) {
+app.use('/getLedStatus', function (req, res) {
     var status = getLedStatus();
     res.end(status);
 });
@@ -24,13 +24,11 @@ app.use('/getLedStatus',function(req,res) {
 app.post("/", function (req, res) {
     initiliazePins();
     var currentLEDStatus = getLedStatus();
-     if (currentLEDStatus==0 || currentLEDStatus==-1) 
-     {
-            switchOn(res);
-     }
-    else 
-    {
-            switchOff(res);
+    if (currentLEDStatus == 0 || currentLEDStatus == -1) {
+        switchOn(res);
+    }
+    else {
+        switchOff(res);
     }
 });
 
@@ -38,17 +36,17 @@ app.post("/", function (req, res) {
 app.set('port', 9000);
 
 // Listen for requests
-var server = app.listen(app.get('port'), function() {
-  var port = server.address().port;
-  console.log('Server running on port ' + port);
-}); 
+var server = app.listen(app.get('port'), function () {
+    var port = server.address().port;
+    console.log('Server running on port ' + port);
+});
 
-function getLedStatus()
-{
-    var ledStatus="-1";
+function getLedStatus() {
+    var ledStatus = "-1";
     if (fs.existsSync("/sys/class/gpio/gpio23/value")) {
         ledStatus = fs.readFileSync('/sys/class/gpio/gpio23/value').toString();
-    }  
+    }
+    console.log("ledStatus : " + ledStatus);
     return ledStatus;
 }
 
@@ -56,21 +54,21 @@ function initiliazePins() {
     if (!fs.existsSync("/sys/class/gpio/gpio23")) {
         fs.writeFileSync('/sys/class/gpio/export', '23');
         fs.writeFileSync('/sys/class/gpio/gpio23/direction', 'out');
-        console.log("Pins initiliazed");
+        console.log("/sys/class/gpio/gpio23 : Not Present");
+    }
+    else    
+    {
+        console.log("/sys/class/gpio/gpio23 : Present");
     }
 }
 
 function switchOn(response) {
-    fs.writeFile('/sys/class/gpio/gpio23/value', '1', function (err) {
-        if (err) return console.log(err);
-        response.end('ON');
-    });
+    fs.writeFileSync('/sys/class/gpio/gpio23/value', '1');
+    response.end('OFF');
 }
 
 function switchOff(response) {
-    fs.writeFile('/sys/class/gpio/gpio23/value', '0', function (err) {
-        fs.writeFileSync('/sys/class/gpio/unexport', '23');
-        response.end('OFF');
-    });
+    fs.writeFileSync('/sys/class/gpio/gpio23/value', '0');
+    response.end('ON');
 }
 
