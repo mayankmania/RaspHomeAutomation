@@ -1,39 +1,9 @@
-var fs = require('fs');
 var express = require('express');
-var path = require('path');
-var app = new express();
 var bodyParser = require('body-parser');
-
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-
-app.use(bodyParser.json());
-
-var options = {
-    index: "nodefile.htm"
-};
-
-app.use('/', express.static('public', options));
-
-app.use('/getLedStatus', function (req, res) {
-    var status = getLedStatus();
-    res.end(status);
-});
-
-app.post("/", function (req, res) {
-    initiliazePins();
-    var currentLEDStatus = getLedStatus();
-    if (currentLEDStatus == 0 || currentLEDStatus == -1) {
-        switchOn(res);
-    }
-    else {
-        switchOff(res);
-    }
-});
-
-// Define the port to run on
-app.set('port', 9000);
+var gpioInstance = require('gpiohelper.js');
+var app = new express();
+var gpio = new gpioInstance();
+startUp();
 
 // Listen for requests
 var server = app.listen(app.get('port'), function () {
@@ -41,34 +11,55 @@ var server = app.listen(app.get('port'), function () {
     console.log('Server running on port ' + port);
 });
 
-function getLedStatus() {
-    var ledStatus = "-1";
-    if (fs.existsSync("/sys/class/gpio/gpio23/value")) {
-        ledStatus = fs.readFileSync('/sys/class/gpio/gpio23/value').toString();
-    }
-    console.log("ledStatus : " + ledStatus);
-    return ledStatus;
-}
-
-function initiliazePins() {
-    if (!fs.existsSync("/sys/class/gpio/gpio23")) {
-        fs.writeFileSync('/sys/class/gpio/export', '23');
-        fs.writeFileSync('/sys/class/gpio/gpio23/direction', 'out');
-        console.log("/sys/class/gpio/gpio23 : Not Present");
-    }
-    else    
-    {
-        console.log("/sys/class/gpio/gpio23 : Present");
-    }
-}
-
-function switchOn(response) {
-    fs.writeFileSync('/sys/class/gpio/gpio23/value', '1');
+//Toggle appliance state
+function switchOn(pinNo, response) {
+    gpio.write(pinNo, 1);
     response.end('ON');
 }
 
-function switchOff(response) {
-    fs.writeFileSync('/sys/class/gpio/gpio23/value', '0');
+function switchOff(pinNo, response) {
+    gpio.write(pinNo, 0);
     response.end('OFF');
 }
 
+//Configure external modules here
+function configureExternalModule() {
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+
+    app.use(bodyParser.json());
+
+    var options = {
+        index: "nodefile.htm"
+    };
+
+    app.use('/', express.static('public', options));
+}
+
+//Configure http request
+function setUpHttpHandler() {
+    app.use('/getLedStatus', function (req, res) {
+        console.log("called");
+        var status = gpio.read('16');
+        res.end(status);
+    });
+
+    app.post("/", function (req, res) {
+        gpio.setUp("16", "out");
+        var currentLEDStatus = gpio.read("16");
+        if (currentLEDStatus == 0 || currentLEDStatus == -1) {
+            switchOn("16", res);
+        }
+        else {
+            switchOff("16", res);
+        }
+    });
+}
+
+//Register all the startup related stuffs in this function
+function startUp() {
+    configureExternalModule();
+    setUpHttpHandler();
+    app.set('port', 9000);
+}
