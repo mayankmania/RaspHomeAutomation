@@ -6,55 +6,37 @@
     <script type="text/javascript">
 
     $(document).ready(function(){
-        setLedStatus();
+        getLedStatus();
     });
 
     function ToggleLed() 
     { 
-        var state = ""; 
-        if (currentLedStatus == "OFF") 
-        { 
-            state = "ON"; 
-        } 
-        else if(currentLedStatus == "ON") 
-        { 
-            state = "OFF"; 
-        }
-
         $.post( "/")
         .done(function(result) {
-                if (result == "OFF") 
-                { 
-                    $("#futureStatus").html("ON");
-                    $("#currentStatus").html("OFF"); 
-                } 
-                else if (result == "ON") { 
-                    $("#futureStatus").html("OFF"); 
-                    $("#currentStatus").html("ON");
-                } 
-                currentLedStatus = result;
+               setLEDStatus(result);
         });
     }
 
-    function setLedStatus()
+    function getLedStatus()
     {
         $.get( "/getLedStatus")
-        .done(function(data) {
-                var result =  parseInt(data); 
-                if (result == "OFF" || result=="0" || result=="-1") 
-                { 
-                    $("#futureStatus").html("ON");
-                    $("#currentStatus").html("OFF");
-                    currentLedStatus = "OFF"; 
-                } 
-                else if (result == "ON" || result=="1") { 
-                    $("#futureStatus").html("OFF"); 
-                    $("#currentStatus").html("ON");
-                    currentLedStatus = "ON";
-                } 
-                
+        .done(function(result) {
+                setLEDStatus(result);
         });
     }
+
+    function setLEDStatus(result)
+    {
+        if (result == "OFF" || result==0 || result==-1) 
+        { 
+            $("#futureStatus").html("ON");
+            $("#currentStatus").html("OFF");
+        } 
+        else if (result == "ON" || result==1) { 
+            $("#futureStatus").html("OFF"); 
+            $("#currentStatus").html("ON");
+        } 
+    }        
     </script>
 </head>
 

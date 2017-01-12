@@ -64,11 +64,11 @@ function initiliazePins() {
 
 function switchOn(response) {
     fs.writeFileSync('/sys/class/gpio/gpio23/value', '1');
-    response.end('OFF');
+    response.end('ON');
 }
 
 function switchOff(response) {
     fs.writeFileSync('/sys/class/gpio/gpio23/value', '0');
-    response.end('ON');
+    response.end('OFF');
 }
 
