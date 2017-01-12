@@ -40,7 +40,6 @@ function configureExternalModule() {
 //Configure http request
 function setUpHttpHandler() {
     app.use('/getLedStatus', function (req, res) {
-        console.log("called");
         var status = gpio.read('16');
         res.end(status);
     });
