@@ -37,7 +37,7 @@ function configureExternalModule() {
     app.use('/', express.static('public', options));
 }
 
-//Configure http request
+//Configure http request handler
 function setUpHttpHandler() {
     app.use('/getLedStatus', function (req, res) {
         var status = gpio.read('16');
