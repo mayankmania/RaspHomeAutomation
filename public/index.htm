@@ -40,7 +40,7 @@
                             <img src="css/icons/fan.png" class="thumbnail" alt="...">
                         </td>
                         <td>
-                            <a href="javascript:void(0);"> <img src="css/icons/start.png" class="thumbnail" alt="..."> </a>
+                            <a href="javascript:void(0);" onclick="ToggleLed(16)"> <img src="css/icons/start.png" class="thumbnail" id="device16"/> </a>
                         </td>
                     </tr>
                     <tr>
@@ -80,6 +80,38 @@
             </table>
         </div>
     </div>
+ <script type="text/javascript">
 
+    $(document).ready(function(){
+        getLedStatus("16");
+    });
+
+    function ToggleLed(deviceId) 
+    { 
+        $.post( "/",{"deviceId":deviceId})
+        .done(function(result) {
+               setLEDStatus(result);
+        });
+    }
+
+    function getLedStatus(deviceId)
+    {
+        $.get( "/getLedStatus",{"deviceId":deviceId})
+        .done(function(result) {
+                setLEDStatus(result);
+        });
+    }
+
+    function setLEDStatus(result)
+    {
+        if (result == "OFF" || result==0 || result==-1) 
+        { 
+            $("#device16").attr('src', 'css/icons/start.png');
+        } 
+        else if (result == "ON" || result==1) { 
+            $("#device16").attr('src', 'css/icons/stop.png');
+        } 
+    }  
+    </script>
 </body>
 </html>

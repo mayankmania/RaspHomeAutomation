@@ -31,7 +31,7 @@ function configureExternalModule() {
     app.use(bodyParser.json());
 
     var options = {
-        index: "nodefile.htm"
+        index: "index.htm"
     };
 
     app.use('/', express.static('public', options));
@@ -40,18 +40,19 @@ function configureExternalModule() {
 //Configure http request handler
 function setUpHttpHandler() {
     app.use('/getLedStatus', function (req, res) {
-        var status = gpio.read('16');
+        var status = gpio.read(req.query.deviceId);
         res.end(status);
     });
 
     app.post("/", function (req, res) {
-        gpio.setUp("16", "out");
-        var currentLEDStatus = gpio.read("16");
+        var deviceId = req.body.deviceId;
+        gpio.setUp(deviceId, "out");
+        var currentLEDStatus = gpio.read(deviceId);
         if (currentLEDStatus == 0 || currentLEDStatus == -1) {
-            switchOn("16", res);
+            switchOn(deviceId, res);
         }
         else {
-            switchOff("16", res);
+            switchOff(deviceId, res);
         }
     });
 }
