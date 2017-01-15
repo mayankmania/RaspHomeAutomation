@@ -13,8 +13,13 @@
     <div class="container">
         <div class="row">
             <h1>
-                Available Devices
+                Not a fancy UI
             </h1>
+        </div>
+        <div class="row">
+            <h2>
+                Available Devices
+            </h2>
         </div>
         <div class="row">
             <table class="table table-hover">
@@ -51,7 +56,7 @@
                             <img src="css/icons/bulb.png" class="thumbnail" alt="...">
                         </td>
                         <td>
-                            <a href="javascript:void(0);"> <img src="css/icons/start.png" class="thumbnail" alt="..."> </a>
+                            <a href="javascript:void(0);" onclick="ToggleLed(15)"> <img src="css/icons/start.png" class="thumbnail" id="device15"/> </a>
                         </td>
                     </tr>
                     <tr>
@@ -62,7 +67,7 @@
                             <img src="css/icons/washer.png" class="thumbnail" alt="...">
                         </td>
                         <td>
-                            <a href="javascript:void(0);"> <img src="css/icons/start.png" class="thumbnail" alt="..."> </a>
+                            <a href="javascript:void(0);" onclick="ToggleLed(18)"> <img src="css/icons/start.png" class="thumbnail" id="device18"/> </a>
                         </td>
                     </tr>
                     <tr>
@@ -73,7 +78,7 @@
                             <img src="css/icons/tv.png" class="thumbnail" alt="...">
                         </td>
                         <td>
-                            <a href="javascript:void(0);"> <img src="css/icons/start.png" class="thumbnail" alt="..."> </a>
+                            <a href="javascript:void(0);" onclick="ToggleLed(19)"> <img src="css/icons/start.png" class="thumbnail" id="device19"/> </a>
                         </td>
                     </tr>
                 </tbody>
@@ -84,6 +89,9 @@
 
     $(document).ready(function(){
         getLedStatus("16");
+        getLedStatus("15");
+        getLedStatus("18");
+        getLedStatus("19");
     });
 
     function ToggleLed(deviceId) 
@@ -104,12 +112,12 @@
 
     function setLEDStatus(result)
     {
-        if (result == "OFF" || result==0 || result==-1) 
+        if (result.status==0) 
         { 
-            $("#device16").attr('src', 'css/icons/start.png');
+            $("#device"+result.deviceId).attr('src', 'css/icons/start.png');
         } 
-        else if (result == "ON" || result==1) { 
-            $("#device16").attr('src', 'css/icons/stop.png');
+        else if (result.status==1) { 
+            $("#device"+result.deviceId).attr('src', 'css/icons/stop.png');
         } 
     }  
     </script>

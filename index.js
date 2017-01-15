@@ -12,14 +12,10 @@ var server = app.listen(app.get('port'), function () {
 });
 
 //Toggle appliance state
-function switchOn(pinNo, response) {
-    gpio.write(pinNo, 1);
-    response.end('ON');
-}
-
-function switchOff(pinNo, response) {
-    gpio.write(pinNo, 0);
-    response.end('OFF');
+function setApplianceState(pinNo,setState, response) {
+    gpio.write(pinNo, setState);
+    var jsonResult = {"status":setState,"deviceId":pinNo};
+	response.json(jsonResult);
 }
 
 //Configure external modules here
@@ -41,7 +37,11 @@ function configureExternalModule() {
 function setUpHttpHandler() {
     app.use('/getLedStatus', function (req, res) {
         var status = gpio.read(req.query.deviceId);
-        res.end(status);
+         if (status == -1) {
+             status = 0;
+        }
+        var jsonResult = {"status":status,"deviceId":req.query.deviceId};
+        res.json(jsonResult);
     });
 
     app.post("/", function (req, res) {
@@ -49,10 +49,10 @@ function setUpHttpHandler() {
         gpio.setUp(deviceId, "out");
         var currentLEDStatus = gpio.read(deviceId);
         if (currentLEDStatus == 0 || currentLEDStatus == -1) {
-            switchOn(deviceId, res);
+            setApplianceState(deviceId,1, res);
         }
         else {
-            switchOff(deviceId, res);
+            setApplianceState(deviceId,0, res);
         }
     });
 }
