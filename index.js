@@ -35,14 +35,25 @@ function configureExternalModule() {
 
 //Configure http request handler
 function setUpHttpHandler() {
-    app.use('/getLedStatus', function (req, res) {
-        var gpio = new gpioInstance();
-        var status = gpio.read(req.query.deviceId);
-        if (status == -1) {
-            status = 0;
+    app.use('/getDevices', function (req, res) {
+
+        // List of registerd devices
+        var devices = [
+{ deviceId: 15, status: 0, device: "fan" },
+{ deviceId: 16, status: 0, device: "tv" },
+{ deviceId: 18, status: 0, device: "washer" },
+{ deviceId: 19, status: 0, device: "bulb" }
+        ];
+
+        for (var i = 0; i < devices.length; i++) {
+            var gpio = new gpioInstance();
+            var status = gpio.read(devices[i].deviceId);
+            if (status == -1) {
+                status = 0;
+            }
+            devices[i].status = status;
         }
-        var jsonResult = { "status": status, "deviceId": req.query.deviceId };
-        res.json(jsonResult);
+        res.json(devices);
     });
 
     app.post("/", function (req, res) {
