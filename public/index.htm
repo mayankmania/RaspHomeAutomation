@@ -42,10 +42,10 @@
                             1
                         </th>
                         <td>
-                            <img src="css/icons/fan.png" class="thumbnail" alt="...">
+                            <img src="css/icons/fan.png" class="thumbnail" alt="Fan">
                         </td>
                         <td>
-                            <a href="javascript:void(0);" onclick="ToggleLed(16)"> <img src="css/icons/start.png" class="thumbnail" id="device16"/> </a>
+                            <a href="javascript:void(0);" onclick="ToggleLed(16)"> <img src="css/icons/start.png" class="thumbnail" id="device16" /> </a>
                         </td>
                     </tr>
                     <tr>
@@ -53,10 +53,10 @@
                             2
                         </th>
                         <td>
-                            <img src="css/icons/bulb.png" class="thumbnail" alt="...">
+                            <img src="css/icons/bulb.png" class="thumbnail" alt="Bulb">
                         </td>
                         <td>
-                            <a href="javascript:void(0);" onclick="ToggleLed(15)"> <img src="css/icons/start.png" class="thumbnail" id="device15"/> </a>
+                            <a href="javascript:void(0);" onclick="ToggleLed(15)"> <img src="css/icons/start.png" class="thumbnail" id="device15" /> </a>
                         </td>
                     </tr>
                     <tr>
@@ -64,10 +64,10 @@
                             3
                         </th>
                         <td>
-                            <img src="css/icons/washer.png" class="thumbnail" alt="...">
+                            <img src="css/icons/washer.png" class="thumbnail" alt="Washing Machine">
                         </td>
                         <td>
-                            <a href="javascript:void(0);" onclick="ToggleLed(18)"> <img src="css/icons/start.png" class="thumbnail" id="device18"/> </a>
+                            <a href="javascript:void(0);" onclick="ToggleLed(18)"> <img src="css/icons/start.png" class="thumbnail" id="device18" /> </a>
                         </td>
                     </tr>
                     <tr>
@@ -75,51 +75,48 @@
                             4
                         </th>
                         <td>
-                            <img src="css/icons/tv.png" class="thumbnail" alt="...">
+                            <img src="css/icons/tv.png" class="thumbnail" alt="TV">
                         </td>
                         <td>
-                            <a href="javascript:void(0);" onclick="ToggleLed(19)"> <img src="css/icons/start.png" class="thumbnail" id="device19"/> </a>
+                            <a href="javascript:void(0);" onclick="ToggleLed(19)"> <img src="css/icons/start.png" class="thumbnail" id="device19" /> </a>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
- <script type="text/javascript">
+    <script type="text/javascript">
 
-    $(document).ready(function(){
-        getLedStatus("16");
-        getLedStatus("15");
-        getLedStatus("18");
-        getLedStatus("19");
-    });
-
-    function ToggleLed(deviceId) 
-    { 
-        $.post( "/",{"deviceId":deviceId})
-        .done(function(result) {
-               setLEDStatus(result);
+        $(document).ready(function () {
+            $.ajaxSetup({ cache: false });
+            getLedStatus("16");
+            getLedStatus("15");
+            getLedStatus("18");
+            getLedStatus("19");
         });
-    }
 
-    function getLedStatus(deviceId)
-    {
-        $.get( "/getLedStatus",{"deviceId":deviceId})
-        .done(function(result) {
+        function ToggleLed(deviceId) {
+            $.post("/", { "deviceId": deviceId })
+            .done(function (result) {
                 setLEDStatus(result);
-        });
-    }
+            });
+        }
 
-    function setLEDStatus(result)
-    {
-        if (result.status==0) 
-        { 
-            $("#device"+result.deviceId).attr('src', 'css/icons/start.png');
-        } 
-        else if (result.status==1) { 
-            $("#device"+result.deviceId).attr('src', 'css/icons/stop.png');
-        } 
-    }  
+        function getLedStatus(deviceId) {
+            $.get("/getLedStatus", { "deviceId": deviceId })
+            .done(function (result) {
+                setLEDStatus(result);
+            });
+        }
+
+        function setLEDStatus(result) {
+            if (result.status == 0) {
+                $("#device" + result.deviceId).attr('src', 'css/icons/start.png');
+            }
+            else if (result.status == 1) {
+                $("#device" + result.deviceId).attr('src', 'css/icons/stop.png');
+            }
+        }
     </script>
 </body>
 </html>
