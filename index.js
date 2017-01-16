@@ -40,9 +40,9 @@ function setUpHttpHandler() {
         // List of registerd devices
         var devices = [
 { deviceId: 15, status: 0, device: "fan" },
-{ deviceId: 16, status: 0, device: "tv" },
+{ deviceId: 16, status: 0, device: "bulb" },
 { deviceId: 18, status: 0, device: "washer" },
-{ deviceId: 19, status: 0, device: "bulb" }
+{ deviceId: 19, status: 0, device: "tv" }
         ];
 
         for (var i = 0; i < devices.length; i++) {
