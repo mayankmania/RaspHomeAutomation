@@ -1,21 +1,24 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var gpioInstance = require('gpiohelper.js');
+var gpioInstance = require('ms-gpio');
+//Define gpioPath to simulate raspberry on local machine
+var gpioPath;
 var app = new express();
+
 startUp();
 
-// Listen for requests
+//Listen for all the request
 var server = app.listen(app.get('port'), function () {
     var port = server.address().port;
     console.log('Server running on port ' + port);
 });
 
-//Toggle appliance state
-function setApplianceState(pinNo, setState, response) {
-    var gpio = new gpioInstance();
-    gpio.write(pinNo, setState);
-    var jsonResult = { "status": setState, "deviceId": pinNo };
-    response.json(jsonResult);
+//Register all the startup related stuffs in this function
+function startUp() {
+    gpioPath = "GPIOTest";
+    configureExternalModule();
+    setUpHttpHandler();
+    app.set('port', 9000);
 }
 
 //Configure external modules here
@@ -37,7 +40,7 @@ function configureExternalModule() {
 function setUpHttpHandler() {
     app.use('/getDevices', function (req, res) {
 
-        // List of registerd devices
+        // List of registerd devices, ideally should come from a database
         var devices = [
 { deviceId: 15, status: 0, device: "fan" },
 { deviceId: 16, status: 0, device: "bulb" },
@@ -46,7 +49,7 @@ function setUpHttpHandler() {
         ];
 
         for (var i = 0; i < devices.length; i++) {
-            var gpio = new gpioInstance();
+            var gpio = new gpioInstance(gpioPath);
             var status = gpio.read(devices[i].deviceId);
             if (status == -1) {
                 status = 0;
@@ -58,7 +61,7 @@ function setUpHttpHandler() {
 
     app.post("/", function (req, res) {
         var deviceId = req.body.deviceId;
-        var gpio = new gpioInstance();
+        var gpio = new gpioInstance(gpioPath);
         gpio.setUp(deviceId, "out");
         var currentLEDStatus = gpio.read(deviceId);
         if (currentLEDStatus == 0 || currentLEDStatus == -1) {
@@ -70,9 +73,10 @@ function setUpHttpHandler() {
     });
 }
 
-//Register all the startup related stuffs in this function
-function startUp() {
-    configureExternalModule();
-    setUpHttpHandler();
-    app.set('port', 9000);
+//Set appliance state
+function setApplianceState(pinNo, setState, response) {
+    var gpio = new gpioInstance(gpioPath);
+    gpio.write(pinNo, setState);
+    var jsonResult = { "status": setState, "deviceId": pinNo };
+    response.json(jsonResult);
 }
